@@ -10,12 +10,11 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.integration.dsl.IntegrationFlow;
-import org.springframework.integration.dsl.IntegrationFlows;
 import org.springframework.integration.mqtt.support.MqttHeaders;
 import org.springframework.messaging.Message;
 import org.springframework.messaging.MessageHeaders;
 
-import javax.annotation.Resource;
+import jakarta.annotation.Resource;
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.Map;
@@ -38,7 +37,7 @@ public class StateRouter {
 
     @Bean
     public IntegrationFlow stateDataRouterFlow() {
-        return IntegrationFlows
+        return IntegrationFlow
                 .from(ChannelName.INBOUND_STATE)
                 .transform(Message.class, source -> {
                     try {
@@ -50,7 +49,7 @@ public class StateRouter {
                     } catch (IOException e) {
                         throw new CloudSDKException(e);
                     }
-                }, null)
+                })
                 .<TopicStateRequest, StateDataKeyEnum>route(response -> StateDataKeyEnum.find(response.getData().getClass()),
                         mapping -> Arrays.stream(StateDataKeyEnum.values()).forEach(key -> mapping.channelMapping(key, key.getChannelName())))
                 .get();
@@ -59,7 +58,7 @@ public class StateRouter {
 
     @Bean
     public IntegrationFlow replySuccessState() {
-        return IntegrationFlows
+        return IntegrationFlow
                 .from(ChannelName.OUTBOUND_STATE)
                 .handle(this::publish)
                 .nullChannel();

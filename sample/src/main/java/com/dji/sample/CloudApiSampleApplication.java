@@ -6,10 +6,10 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.scheduling.annotation.EnableScheduling;
 
-@MapperScan("com.dji.sample.*.dao")
 @SpringBootApplication
 @EnableScheduling
 @ComponentScan("com.dji")
+@MapperScan("com.dji.sample.*.dao")
 public class CloudApiSampleApplication {
 
 	public static void main(String[] args) {

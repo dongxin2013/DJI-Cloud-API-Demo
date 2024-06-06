@@ -7,12 +7,11 @@ import com.dji.sdk.mqtt.MqttGatewayPublish;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.integration.dsl.IntegrationFlow;
-import org.springframework.integration.dsl.IntegrationFlows;
 import org.springframework.integration.mqtt.support.MqttHeaders;
 import org.springframework.messaging.Message;
 import org.springframework.messaging.MessageHeaders;
 
-import javax.annotation.Resource;
+import jakarta.annotation.Resource;
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.Objects;
@@ -32,7 +31,7 @@ public class EventsRouter {
 
     @Bean
     public IntegrationFlow eventsMethodRouterFlow() {
-        return IntegrationFlows
+        return IntegrationFlow
                 .from(ChannelName.INBOUND_EVENTS)
                 .transform(Message.class, source -> {
                     try {
@@ -43,7 +42,7 @@ public class EventsRouter {
                     } catch (IOException e) {
                         throw new CloudSDKException(e);
                     }
-                }, null)
+                })
                 .<TopicEventsRequest, EventsMethodEnum>route(
                         response -> EventsMethodEnum.find(response.getMethod()),
                         mapping -> Arrays.stream(EventsMethodEnum.values()).forEach(
@@ -53,7 +52,7 @@ public class EventsRouter {
 
     @Bean
     public IntegrationFlow replySuccessEvents() {
-        return IntegrationFlows
+        return IntegrationFlow
                 .from(ChannelName.OUTBOUND_EVENTS)
                 .handle(this::publish)
                 .nullChannel();
